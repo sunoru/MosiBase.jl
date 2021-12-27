@@ -1,5 +1,3 @@
-import Base: close, flush, seekend, seekstart
-
 struct TapeFiles{T1 <: Nullable{IOStream}, T2 <: Nullable{IOStream}}
     ts::IOStream
     rs::IOStream
@@ -84,10 +82,10 @@ all_files(tf::TapeFiles) = let a = has_vs(tf), b = has_pbc(tf)
         (tf.ts, tf.rs, tf.ps) :
         (tf.ts, tf.rs)
 end
-close(tf::TapeFiles) = close.(all_files(tf))
-flush(tf::TapeFiles) = flush.(all_files(tf))
-seekend(tf::TapeFiles) = seekend.(all_files(tf))
-seekstart(tf::TapeFiles) = seekstart.(all_files(tf))
+Base.close(tf::TapeFiles) = close.(all_files(tf))
+Base.flush(tf::TapeFiles) = flush.(all_files(tf))
+Base.seekend(tf::TapeFiles) = seekend.(all_files(tf))
+Base.seekstart(tf::TapeFiles) = seekstart.(all_files(tf))
 
 struct MultiFileMemoryMapTape{
     T <: MosiVector, T1 <: Nullable{IOStream}, T2 <: Nullable{IOStream}
@@ -107,9 +105,9 @@ function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where 
 end
 
 has_pbc(tape::MultiFileMemoryMapTape) = has_pbc(tape.tape_files)
-length(tape::MultiFileMemoryMapTape) = tape.len
+Base.length(tape::MultiFileMemoryMapTape) = tape.len
 natoms(tape::MultiFileMemoryMapTape) = tape.N
-time(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.ts, Float64, 1, i)[1]
+Base.time(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.ts, Float64, 1, i)[1]
 times(tape::MultiFileMemoryMapTape) = read_vector_all(tape.tape_files.ts, Float64)
 positions(tape::MultiFileMemoryMapTape{T}, i) where T = fetch_data!(
     tape.tape_files.rs, T,

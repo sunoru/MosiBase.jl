@@ -11,7 +11,7 @@ potential_energy_gradients(model::MosiModel) = (rs) -> -force_function(model)(rs
 
 has_pbc(model::MosiModel) = false
 box(model::MosiModel) = model.box
-distance_function(model_or_system::Union{MosiModel, System}) = if has_pbc(model_or_system)
+distance_function(model_or_system::Union{MosiModel, MosiSystem}) = if has_pbc(model_or_system)
     pbc_distance(box(model_or_system))
 else
     default_distance

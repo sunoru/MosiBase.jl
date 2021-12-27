@@ -30,9 +30,26 @@ export spherical_to_cartesian, cartesian_to_spherical,
     random_3d_direction, random_direction_plane
 include("./utils/3d_math.jl")
 
+export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
+    natoms, positions, velocities, periods, box, has_pbc, original_positions,
+    distance_function, update_periods!
 include("./types/system.jl")
+
+export MosiModel, UnknownModelname,
+    constraints, constraint_gradients,
+    potential_energy_function, force_function, potential_energy_gradients
 include("./types/model.jl")
+
+export potential_energy
+include("./types/energy.jl")
+
+export SimulationState, SimulationTape, SimulationSetup, SimulationResult, SimulationError,
+    SimpleTape,
+    system, times, get_configuration_func, init_state, tape, observables
 include("./types/simulation.jl")
+
+export TapeFiles, MultiFileMemoryMapTape,
+    has_vs, update_tape, configuration
 include("./types/tape_files.jl")
 
 end

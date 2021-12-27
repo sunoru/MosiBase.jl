@@ -3,35 +3,35 @@ import Base: copy
 import LinearAlgebra: norm, normalize
 import Statistics: mean
 
-abstract type System{T <: MosiVector} end
-abstract type Molecule{T} <: System{T} end
+abstract type MosiSystem{T <: MosiVector} end
+abstract type Molecule{T} <: MosiSystem{T} end
 
-natoms(s::System) = length(positions(s))
-positions(::System) = error("Unimplemented")
-velocities(::System{T}) where T = T[]
-periods(::System{T}) where T = T[]
-box(::System{T}) where T = zero(T)
-has_pbc(s::System{T}) where T = box(s) ≢ zero(T)
-original_positions(s::System) = if has_pbc(s)
+natoms(s::MosiSystem) = length(positions(s))
+positions(::MosiSystem) = error("Unimplemented")
+velocities(::MosiSystem{T}) where T = T[]
+periods(::MosiSystem{T}) where T = T[]
+box(::MosiSystem{T}) where T = zero(T)
+has_pbc(s::MosiSystem{T}) where T = box(s) ≢ zero(T)
+original_positions(s::MosiSystem) = if has_pbc(s)
     original_vectors(
         positions(s), periods(s), box(s)
     )
 else
     positions(s)
 end
-distance_function(s::System) = if has_pbc(s)
+distance_function(s::MosiSystem) = if has_pbc(s)
     pbc_distance(box(s))
 else
     default_distance
 end
-update_periods!(s::System) = if has_pbc(s)
+update_periods!(s::MosiSystem) = if has_pbc(s)
     update_periods!(positions(s), periods(s), box(s))
     s
 else
     nothing
 end
 
-struct MolecularSystem{T <: MosiVector, AT <: AbstractVector{T}} <: System{T}
+struct MolecularSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
     positions::AT
     velocities::AT
     periods::AT
@@ -60,7 +60,7 @@ velocities(s::MolecularSystem) = s.velocities
 periods(s::MolecularSystem) = s.periods
 box(s::MolecularSystem) = s.box
 
-struct ConfigurationSystem{T <: MosiVector, AT <: AbstractVector{T}} <: System{T}
+struct ConfigurationSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
     positions::AT
     periods::AT
     box::T
@@ -68,11 +68,15 @@ end
 
 function ConfigurationSystem(rs; box = nothing)
     T = eltype(rs)
-    @assert box ≡ nothing || box ≡ zero(T)
-    ConfigurationSystem(rs, [], zero(T))
+    ps, box = if box ≡ nothing || box ≡ zero(T)
+        T[], zero(T)
+    else
+        zeros(T, length(rs)), box
+    end
+    update_periods!(ConfigurationSystem(rs, ps, box))
 end
 ConfigurationSystem((rs, ps)::Tuple; box) = update_periods!(ConfigurationSystem(rs, ps, box))
-ConfigurationSystem(s::System; box = box(s)) = ConfigurationSystem(positions(s), periods(s), box)
+ConfigurationSystem(s::MosiSystem; box = box(s)) = ConfigurationSystem(positions(s), periods(s), box)
 copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), box(s))
 
 positions(s::ConfigurationSystem) = s.positions

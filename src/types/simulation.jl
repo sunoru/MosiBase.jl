@@ -1,7 +1,7 @@
 abstract type SimulationState end
 
-system(::SimulationState, ::MosiModel=UnknownModel) = error("Unimplemented")
-time(::SimulationState) = error("Unimplemented")
+system(::SimulationState) = error("Unimplemented")
+Base.time(::SimulationState) = error("Unimplemented")
 positions(state::SimulationState) = positions(system(state))
 velocities(state::SimulationState) = velocities(system(state))
 periods(state::SimulationState) = periods(system(state))
@@ -17,7 +17,7 @@ end
 SimulationTape(ts, rs) = SimpleTape(ts, rs, [], [])
 SimulationTape(ts, rs, vs, ps) = SimpleTape(ts, rs, vs, ps)
 natoms(tape::SimulationTape) = length(tape.positions[1])
-length(tape::SimulationTape) = length(tape.times)
+Base.length(tape::SimulationTape) = length(tape.times)
 times(tape::SimulationTape) = tape.times
 positions(tape::SimulationTape) = tape.positions
 velocities(tape::SimulationTape) = tape.velocities
@@ -42,6 +42,10 @@ function get_configuration_func(
         tbox
     )
 end
+
+abstract type SimulationSetup end
+model(::SimulationSetup) = UnknownModel
+init_state(::SimulationSetup) = error("Unimplemented")
 
 abstract type SimulationResult end
 tape(result::SimulationResult) = result.tape
