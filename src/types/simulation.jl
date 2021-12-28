@@ -44,7 +44,7 @@ function get_configuration_func(
 end
 
 abstract type SimulationSetup end
-model(::SimulationSetup) = UnknownModel
+model(::SimulationSetup) = UnknownModel()
 init_state(::SimulationSetup) = error("Unimplemented")
 
 abstract type SimulationResult end

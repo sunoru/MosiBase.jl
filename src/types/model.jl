@@ -17,6 +17,5 @@ else
     default_distance
 end
 
-struct UnknownModelType <: MosiModel end
-const UnknownModel = UnknownModelType()
-name(::UnknownModelType) = "UnknownModel"
+struct UnknownModel <: MosiModel end
+name(::UnknownModel) = "UnknownModel"

@@ -35,8 +35,8 @@ export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
     distance_function, update_periods!
 include("./types/system.jl")
 
-export MosiModel, UnknownModelname,
-    constraints, constraint_gradients,
+export MosiModel, UnknownModel,
+    name, constraints, constraint_gradients,
     potential_energy_function, force_function, potential_energy_gradients
 include("./types/model.jl")
 
@@ -51,5 +51,8 @@ include("./types/simulation.jl")
 export TapeFiles, MultiFileMemoryMapTape,
     has_vs, update_tape, configuration
 include("./types/tape_files.jl")
+
+export Ensemble, CanonicalEnsemble, MicrocanonicalEnsemble, PotentialEnergyLandscapeEnsemble
+include("./types/ensembles.jl")
 
 end
