@@ -1,5 +1,8 @@
 module MosiBases
 
+using LinearAlgebra
+import Base: @pure
+
 export Nullable
 include("./bases/bases.jl")
 
@@ -14,7 +17,8 @@ export file_size, read_vector_all,
     read_vectors, read_vectors_all
 include("./utils/io.jl")
 
-export make_seed, new_rng, restore_rng, rng_state
+export Xoshiro256StarStar,
+    make_seed, new_rng, restore_rng, rng_state
 include("./utils/rng.jl")
 
 export period_check, update_periods!,
@@ -30,13 +34,16 @@ export spherical_to_cartesian, cartesian_to_spherical,
     random_3d_direction, random_direction_plane
 include("./utils/3d_math.jl")
 
+export orthogonalize, projection_matrix
+include("./utils/projection_matrix.jl")
+
 export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
     natoms, positions, velocities, periods, box, has_pbc, original_positions,
     distance_function, update_periods!
 include("./types/system.jl")
 
 export MosiModel, UnknownModel,
-    name, constraints, constraint_gradients,
+    name, is_3d, constraints, constraint_gradients,
     potential_energy_function, force_function, potential_energy_gradients
 include("./types/model.jl")
 
