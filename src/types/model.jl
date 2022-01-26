@@ -3,10 +3,9 @@ abstract type MosiModel{T <: MosiVector} end
 name(::MosiModel) = error("Unimplemented")
 is_3d(::MosiModel) = T ≡ Vector3
 natoms(model::MosiModel) = model.N
-constraints(::MosiModel, rs) = error("Unimplemented")
-constraints(::MosiModel, rs, i) = error("Unimplemented")
-constraint_gradients(::MosiModel, rs) = error("Unimplemented")
-constraint_gradients(::MosiModel, rs, i) = error("Unimplemented")
+constraints(::MosiModel, rs) = Float64[]
+constraint_gradients(::MosiModel{T}, rs) where T = Vector{T}[]
+constraint_gradients(::MosiModel{T}, rs, i) where T = T[]
 
 potential_energy_function(::MosiModel, rs) = error("Unimplemented")
 force_function(::MosiModel, rs) = error("Unimplemented")
