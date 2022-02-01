@@ -1,6 +1,6 @@
 abstract type MosiModel{T <: MosiVector} end
 
-name(::MosiModel) = error("Unimplemented")
+name(::T) where T <: MosiModel = string(T)
 is_3d(::MosiModel) = T ≡ Vector3
 natoms(model::MosiModel) = model.N
 constraints(::MosiModel, rs) = Float64[]
