@@ -128,10 +128,10 @@ else
     T[]
 end
 periods(tape::MultiFileMemoryMapTape{T}) where T = has_pbc(tape) ? read_vectors_all(tape.tape_files.ps, T, tape.N) : Vector{T}[]
-configuration(tape::MultiFileMemoryMapTape{T}, i, tbox = zero(T)) where T = ConfigurationSystem(
+configuration(tape::MultiFileMemoryMapTape{T}, i, box = zero(T)) where T = ConfigurationSystem(
     positions(tape, i),
     periods(tape, i),
-    tbox
+    box
 )
 
 function get_configuration_func(
@@ -141,7 +141,7 @@ function get_configuration_func(
     buffer_size = 256
 ) where T
     pbc = has_pbc(tape)
-    tbox = box(model)
+    box = pbc_box(model)
     N = natoms(tape)
     a, b = first(atom_range), last(atom_range)
     @assert a > 0 && b ≤ N
@@ -178,7 +178,7 @@ function get_configuration_func(
             ConfigurationSystem(rs)
         else
             ps = reinterpret(T, view(buffer_ps, i_start + 1 + a:i_start + b))
-            ConfigurationSystem(rs, ps, tbox)
+            ConfigurationSystem(rs, ps, box)
         end
     end
 end

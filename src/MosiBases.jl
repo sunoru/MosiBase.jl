@@ -38,7 +38,7 @@ export orthogonalize, projection_matrix
 include("./utils/projection_matrix.jl")
 
 export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
-    natoms, positions, velocities, periods, box, has_pbc, original_positions,
+    natoms, positions, velocities, periods, has_pbc, pbc_box, original_positions,
     distance_function, update_periods!
 include("./types/system.jl")
 

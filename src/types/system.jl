@@ -10,22 +10,22 @@ natoms(s::MosiSystem) = length(positions(s))
 positions(::MosiSystem) = error("Unimplemented")
 velocities(::MosiSystem{T}) where T = T[]
 periods(::MosiSystem{T}) where T = T[]
-box(::MosiSystem{T}) where T = zero(T)
-has_pbc(s::MosiSystem{T}) where T = box(s) ≢ zero(T)
+pbc_box(::MosiSystem{T}) where T = zero(T)
+has_pbc(s::MosiSystem{T}) where T = pbc_box(s) ≢ zero(T)
 original_positions(s::MosiSystem) = if has_pbc(s)
     original_vectors(
-        positions(s), periods(s), box(s)
+        positions(s), periods(s), pbc_box(s)
     )
 else
     positions(s)
 end
 distance_function(s::MosiSystem) = if has_pbc(s)
-    pbc_distance(box(s))
+    pbc_distance(pbc_box(s))
 else
     default_distance
 end
 update_periods!(s::MosiSystem) = if has_pbc(s)
-    update_periods!(positions(s), periods(s), box(s))
+    update_periods!(positions(s), periods(s), pbc_box(s))
     s
 else
     nothing
@@ -58,7 +58,7 @@ end
 positions(s::MolecularSystem) = s.positions
 velocities(s::MolecularSystem) = s.velocities
 periods(s::MolecularSystem) = s.periods
-box(s::MolecularSystem) = s.box
+pbc_box(s::MolecularSystem) = s.box
 
 struct ConfigurationSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
     positions::AT
@@ -76,10 +76,10 @@ function ConfigurationSystem(rs; box = nothing)
     update_periods!(ConfigurationSystem(rs, ps, box))
 end
 ConfigurationSystem((rs, ps)::Tuple; box) = update_periods!(ConfigurationSystem(rs, ps, box))
-ConfigurationSystem(s::MosiSystem; box = box(s)) = ConfigurationSystem(positions(s), periods(s), box)
-copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), box(s))
+ConfigurationSystem(s::MosiSystem; box = pbc_box(s)) = ConfigurationSystem(positions(s), periods(s), box)
+copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), pbc_box(s))
 
 positions(s::ConfigurationSystem) = s.positions
 velocities(::ConfigurationSystem{T}) where T = T[]
 periods(s::ConfigurationSystem) = s.periods
-box(s::ConfigurationSystem) = s.box
+pbc_box(s::ConfigurationSystem) = s.box

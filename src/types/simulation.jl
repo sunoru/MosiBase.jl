@@ -35,11 +35,11 @@ function get_configuration_func(
 )
     rss = positions(tape)
     pss = periods(tape)
-    tbox = box(model)
+    box = pbc_box(model)
     (i::Int) -> ConfigurationSystem(
         view(rss[i], atom_range),
         view(pss[i], atom_range),
-        tbox
+        box
     )
 end
 
