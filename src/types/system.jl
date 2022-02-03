@@ -60,9 +60,11 @@ velocities(s::MolecularSystem) = s.velocities
 periods(s::MolecularSystem) = s.periods
 pbc_box(s::MolecularSystem) = s.box
 
-struct ConfigurationSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
-    positions::AT
-    periods::AT
+struct ConfigurationSystem{
+    T <: MosiVector, AT1 <: AbstractVector{T}, AT2 <: AbstractVector{T}
+} <: MosiSystem{T}
+    positions::AT1
+    periods::AT2
     box::T
 end
 
