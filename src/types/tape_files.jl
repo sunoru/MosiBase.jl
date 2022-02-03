@@ -88,15 +88,26 @@ Base.seekend(tf::TapeFiles) = seekend.(all_files(tf))
 Base.seekstart(tf::TapeFiles) = seekstart.(all_files(tf))
 
 struct MultiFileMemoryMapTape{
-    T <: MosiVector, T1 <: Nullable{IOStream}, T2 <: Nullable{IOStream}
-} <: SimulationTape{T}
+    TM <: MosiModel, T1 <: Nullable{IOStream}, T2 <: Nullable{IOStream}
+} <: SimulationTape{TM}
     tape_files::TapeFiles{T1, T2}
-    N::Int
     len::Int
+    model::TM
 end
 
-MultiFileMemoryMapTape(tape_files::TapeFiles{T1, T2}, N, len; is3d=true) where {T1, T2} =
-    MultiFileMemoryMapTape{is3d ? Vector3 : Vector2, T1, T2}(tape_files, N, len)
+MultiFileMemoryMapTape(tape_files::TapeFiles{T1, T2}, len, model; is3d=true) where {T1, T2} =
+    MultiFileMemoryMapTape{is3d ? Vector3 : Vector2, T1, T2}(tape_files, len, model)
+
+function MultiFileMemoryMapTape(
+    datadir::AbstractString, model;
+    filename_prefix = "tape",
+    has_vs = true,
+    has_pbc = false
+)
+    tape_files = TapeFiles(datadir; filename_prefix = filename_prefix, has_vs = has_vs, has_pbc = has_pbc)
+    len = filesize(joinpath(datadir, "$filename_prefix-ts.dat")) ÷ sizeof(Float64)
+    MultiFileMemoryMapTape(tape_files, len, model)
+end
 
 function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where T
     record_size = sizeof(T) * len
@@ -109,40 +120,49 @@ end
 
 has_pbc(tape::MultiFileMemoryMapTape) = has_pbc(tape.tape_files)
 Base.length(tape::MultiFileMemoryMapTape) = tape.len
-natoms(tape::MultiFileMemoryMapTape) = tape.N
+natoms(tape::MultiFileMemoryMapTape) = natoms(tape.model)
 Base.time(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.ts, Float64, 1, i)[1]
 times(tape::MultiFileMemoryMapTape) = read_vector_all(tape.tape_files.ts, Float64)
-positions(tape::MultiFileMemoryMapTape{T}, i) where T = fetch_data!(
-    tape.tape_files.rs, T,
+positions(tape::MultiFileMemoryMapTape{TM}, i) where TM = fetch_data!(
+    tape.tape_files.rs, vectype(TM),
     tape.N, i
 )
-positions(tape::MultiFileMemoryMapTape{T}) where T = read_vectors_all(tape.tape_files.rs, T, tape.N)
-velocities(tape::MultiFileMemoryMapTape{T}, i) where T = fetch_data!(
-    tape.tape_files.vs, T,
+positions(tape::MultiFileMemoryMapTape{TM}) where TM = read_vectors_all(tape.tape_files.rs, vectype(TM), tape.N)
+velocities(tape::MultiFileMemoryMapTape{TM}, i) where TM = fetch_data!(
+    tape.tape_files.vs, vectype(TM),
     tape.N, i
 )
-velocities(tape::MultiFileMemoryMapTape{T}) where T = has_vs(tape) ? read_vectors_all(tape.tape_files.vs, T, tape.N) : Vector{T}[]
-periods(tape::MultiFileMemoryMapTape{T}, i) where T = if has_pbc(tape)
+velocities(tape::MultiFileMemoryMapTape{TM}) where TM = if has_vs(tape)
+    read_vectors_all(tape.tape_files.vs, vectype(TM), tape.N)
+else
+    Vector{vectype(TM)}[]
+end
+periods(tape::MultiFileMemoryMapTape{TM}, i) where TM = if has_pbc(tape)
     fetch_data!(
-        tape.tape_files.ps, T,
+        tape.tape_files.ps, vectype(TM),
         tape.N, i
     )
 else
     T[]
 end
-periods(tape::MultiFileMemoryMapTape{T}) where T = has_pbc(tape) ? read_vectors_all(tape.tape_files.ps, T, tape.N) : Vector{T}[]
-configuration(tape::MultiFileMemoryMapTape{T}, i, box = zero(T)) where T = ConfigurationSystem(
+periods(tape::MultiFileMemoryMapTape{TM}) where TM = if has_pbc(tape)
+    read_vectors_all(tape.tape_files.ps, vectype(TM), tape.N)
+else
+    Vector{vectype(TM)}[]
+end
+configuration(tape::MultiFileMemoryMapTape, i) = ConfigurationSystem(
     positions(tape, i),
     periods(tape, i),
-    box
+    pbc_box(tape.model)
 )
 
 function get_configuration_func(
-    tape::MultiFileMemoryMapTape{T},
-    model::MosiModel;
+    tape::MultiFileMemoryMapTape;
     atom_range = 1:natoms(tape),
     buffer_size = 256
-) where T
+)
+    model = tape.model
+    T = vectype(model)
     pbc = has_pbc(tape)
     box = pbc_box(model)
     N = natoms(tape)

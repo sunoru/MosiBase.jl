@@ -13,7 +13,7 @@ export Vector2, Vector3, MosiVector,
     to_matrix
 include("./bases/vectors.jl")
 
-export file_size, read_vector_all,
+export read_vector_all,
     read_vectors, read_vectors_all
 include("./utils/io.jl")
 
@@ -43,7 +43,7 @@ export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
 include("./types/system.jl")
 
 export MosiModel, UnknownModel,
-    name, is_3d, constraints, constraint_gradients,
+    name, is_3d, vectype, constraints, constraint_gradients,
     potential_energy_function, force_function, potential_energy_gradients
 include("./types/model.jl")
 
@@ -52,7 +52,7 @@ include("./types/energy.jl")
 
 export SimulationState, SimulationTape, SimulationSetup, SimulationResult, SimulationError,
     SimpleTape,
-    system, times, get_configuration_func, init_state, tape, observables
+    system, times, mosi_model, get_configuration_func, init_state, tape, observables
 include("./types/simulation.jl")
 
 export TapeFiles, MultiFileMemoryMapTape,

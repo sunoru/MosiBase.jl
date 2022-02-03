@@ -6,17 +6,20 @@ positions(state::SimulationState) = positions(system(state))
 velocities(state::SimulationState) = velocities(system(state))
 periods(state::SimulationState) = periods(system(state))
 
-abstract type SimulationTape{T <: MosiVector} end
+abstract type SimulationTape{TM <: MosiModel} end
 
-struct SimpleTape{T} <: SimulationTape{T}
+struct SimpleTape{T, TM <: MosiModel{T}} <: SimulationTape{TM}
     times::Vector{Float64}
     positions::Vector{Vector{T}}
     velocities::Vector{Vector{T}}
     periods::Vector{Vector{T}}
+    model::TM
 end
-SimulationTape(ts, rs) = SimpleTape(ts, rs, [], [])
-SimulationTape(ts, rs, vs, ps) = SimpleTape(ts, rs, vs, ps)
-natoms(tape::SimulationTape) = length(tape.positions[1])
+SimulationTape(ts, rs) = SimpleTape(ts, rs, [], [], UnknownModel())
+SimulationTape(ts, rs, vs, ps) = SimpleTape(ts, rs, vs, ps, UnknownModel())
+mosi_model(tape::SimulationTape) = tape.model
+natoms(tape::SimulationTape{UnknownModel}) = length(tape.positions[1])
+natoms(tape::SimulationTape) = natoms(tape.model)
 Base.length(tape::SimulationTape) = length(tape.times)
 times(tape::SimulationTape) = tape.times
 positions(tape::SimulationTape) = tape.positions
@@ -29,12 +32,12 @@ velocities(tape::SimulationTape, i) = tape.velocities[i]
 periods(tape::SimulationTape{T}, i) where T = length(tape.periods) ≡ 0 ? T[] : tape.periods[i]
 
 function get_configuration_func(
-    tape::SimulationTape,
-    model::MosiModel;
+    tape::SimulationTape;
     atom_range = 1:natoms(tape)
 )
     rss = positions(tape)
     pss = periods(tape)
+    model = tape.model
     box = pbc_box(model)
     (i::Int) -> ConfigurationSystem(
         view(rss[i], atom_range),
@@ -44,7 +47,7 @@ function get_configuration_func(
 end
 
 abstract type SimulationSetup end
-model(::SimulationSetup) = UnknownModel()
+mosi_model(::SimulationSetup) = UnknownModel()
 init_state(::SimulationSetup) = error("Unimplemented")
 
 abstract type SimulationResult end

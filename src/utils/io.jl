@@ -1,12 +1,3 @@
-function file_size(io::Nullable{IOStream})
-    isnothing(io) && return 0
-    t = position(io)
-    seekend(io)
-    fs = position(io)
-    seek(io, t)
-    fs
-end
-
 function read_vector_all(io::IOStream, ::Type{T}) where T
     t = position(io)
     seekend(io)
