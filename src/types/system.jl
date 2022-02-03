@@ -28,7 +28,7 @@ update_periods!(s::MosiSystem) = if has_pbc(s)
     update_periods!(positions(s), periods(s), pbc_box(s))
     s
 else
-    nothing
+    s
 end
 
 struct MolecularSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
