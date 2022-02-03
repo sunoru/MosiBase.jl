@@ -95,6 +95,9 @@ struct MultiFileMemoryMapTape{
     len::Int
 end
 
+MultiFileMemoryMapTape(tape_files::TapeFiles{T1, T2}, N, len; is3d=true) where {T1, T2} =
+    MultiFileMemoryMapTape{is3d ? Vector3 : Vector2, T1, T2}(tape_files, N, len)
+
 function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where T
     record_size = sizeof(T) * len
     offset = record_size * (i - 1)
