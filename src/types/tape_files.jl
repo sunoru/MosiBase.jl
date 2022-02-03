@@ -43,24 +43,24 @@ TapeFiles(
     datadir::AbstractString;
     filename_prefix = "tape",
     has_vs = true,
-    has_pbc = false,
+    has_ps = false,
     read = true
 ) = TapeFiles(
     joinpath(datadir, "$filename_prefix-ts.dat"),
     joinpath(datadir, "$filename_prefix-rs.dat"),
     has_vs ? joinpath(datadir, "$filename_prefix-vs.dat") : nothing,
-    has_pbc ? joinpath(datadir, "$filename_prefix-ps.dat") : nothing;
+    has_ps ? joinpath(datadir, "$filename_prefix-ps.dat") : nothing;
     read = read
 )
 
 has_vs(tf::TapeFiles) = !isnothing(tf.vs)
-has_pbc(tf::TapeFiles) = !isnothing(tf.ps)
+has_ps(tf::TapeFiles) = !isnothing(tf.ps)
 
 function read_tape(tf::TapeFiles, ::Type{T}, N::Integer) where T <: MosiVector
     times = read_vector_all(tf.ts, Float64)
     rs = read_vectors_all(tf.rs, T, N)
     vs = has_vs(tf) ? read_vectors_all(tf.vs, T, N) : Vector{T}[]
-    periods = has_pbc(tf) ? read_vector3s_all(tf.ps, T, N) : Vector{T}[]
+    periods = has_ps(tf) ? read_vector3s_all(tf.ps, T, N) : Vector{T}[]
     SimulationTape(times, rs, vs, periods)
 end
 
@@ -70,11 +70,11 @@ function update_tape(tf::TapeFiles, s::SimulationState)
     if has_vs(tf)
         write(tf.vs, velocities(s))
     end
-    if has_pbc(tf)
+    if has_ps(tf)
         write(tf.ps, periods(s))
     end
 end
-all_files(tf::TapeFiles) = let a = has_vs(tf), b = has_pbc(tf)
+all_files(tf::TapeFiles) = let a = has_vs(tf), b = has_ps(tf)
     a ? b ?
         (tf.ts, tf.rs, tf.vs, tf.ps) :
         (tf.ts, tf.rs, tf.vs) :
@@ -102,9 +102,9 @@ function MultiFileMemoryMapTape(
     datadir::AbstractString, model;
     filename_prefix = "tape",
     has_vs = true,
-    has_pbc = false
+    has_ps = false
 )
-    tape_files = TapeFiles(datadir; filename_prefix = filename_prefix, has_vs = has_vs, has_pbc = has_pbc)
+    tape_files = TapeFiles(datadir; filename_prefix = filename_prefix, has_vs = has_vs, has_ps = has_ps)
     len = filesize(joinpath(datadir, "$filename_prefix-ts.dat")) ÷ sizeof(Float64)
     MultiFileMemoryMapTape(tape_files, len, model)
 end
@@ -118,7 +118,7 @@ function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where 
     vec
 end
 
-has_pbc(tape::MultiFileMemoryMapTape) = has_pbc(tape.tape_files)
+has_ps(tape::MultiFileMemoryMapTape) = has_ps(tape.tape_files)
 Base.length(tape::MultiFileMemoryMapTape) = tape.len
 natoms(tape::MultiFileMemoryMapTape) = natoms(tape.model)
 Base.time(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.ts, Float64, 1, i)[1]
@@ -137,7 +137,7 @@ velocities(tape::MultiFileMemoryMapTape{TM}) where TM = if has_vs(tape)
 else
     Vector{vectype(TM)}[]
 end
-periods(tape::MultiFileMemoryMapTape{TM}, i) where TM = if has_pbc(tape)
+periods(tape::MultiFileMemoryMapTape{TM}, i) where TM = if has_ps(tape)
     fetch_data!(
         tape.tape_files.ps, vectype(TM),
         tape.N, i
@@ -145,7 +145,7 @@ periods(tape::MultiFileMemoryMapTape{TM}, i) where TM = if has_pbc(tape)
 else
     T[]
 end
-periods(tape::MultiFileMemoryMapTape{TM}) where TM = if has_pbc(tape)
+periods(tape::MultiFileMemoryMapTape{TM}) where TM = if has_ps(tape)
     read_vectors_all(tape.tape_files.ps, vectype(TM), tape.N)
 else
     Vector{vectype(TM)}[]
@@ -163,7 +163,7 @@ function get_configuration_func(
 )
     model = tape.model
     T = vectype(model)
-    pbc = has_pbc(tape)
+    hasps = has_ps(tape)
     box = pbc_box(model)
     N = natoms(tape)
     a, b = first(atom_range), last(atom_range)
@@ -173,13 +173,13 @@ function get_configuration_func(
     a, b = (a - 1) * s1, b * s1
     buffer_len = buffer_size * rsize
     buffer_rs = zeros(UInt8, buffer_len)
-    buffer_ps = pbc ? zeros(UInt8, buffer_len) : nothing
+    buffer_ps = hasps ? zeros(UInt8, buffer_len) : nothing
     range = 1:buffer_size
     f_rs = tape.tape_files.rs
     f_ps = tape.tape_files.ps
     seekstart(f_rs)
     readbytes!(f_rs, buffer_rs; all=false)
-    if pbc
+    if hasps
         seekstart(f_ps)
         readbytes!(f_ps, buffer_ps; all=false)
     end
@@ -189,7 +189,7 @@ function get_configuration_func(
             range = t * buffer_size + 1 : (t + 1) * buffer_size
             seek(f_rs, rsize * t * buffer_size)
             readbytes!(f_rs, buffer_rs; all=false)
-            if pbc
+            if hasps
                 seek(f_ps, rsize * t * buffer_size)
                 readbytes!(f_ps, buffer_ps; all=false)
             end
@@ -197,11 +197,11 @@ function get_configuration_func(
         j = (i - 1) % buffer_size
         i_start = j * rsize
         rs = reinterpret(T, view(buffer_rs, i_start + 1 + a:i_start + b))
-        if !pbc
-            ConfigurationSystem(rs)
-        else
+        if hasps
             ps = reinterpret(T, view(buffer_ps, i_start + 1 + a:i_start + b))
             ConfigurationSystem(rs, ps, box)
+        else
+            ConfigurationSystem(rs, box = box)
         end
     end
 end
