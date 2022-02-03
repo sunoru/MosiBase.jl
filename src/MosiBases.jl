@@ -22,7 +22,7 @@ export Xoshiro256StarStar,
 include("./utils/rng.jl")
 
 export period_check, update_periods!,
-    default_distance, pbc_distance,
+    default_distance, pbc_distance, pbc_box,
     original_vector, original_vectors
 include("./utils/pbc.jl")
 
@@ -38,7 +38,7 @@ export orthogonalize, projection_matrix
 include("./utils/projection_matrix.jl")
 
 export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
-    natoms, positions, velocities, periods, has_pbc, pbc_box, original_positions,
+    natoms, positions, velocities, periods, has_pbc, original_positions,
     distance_function, update_periods!
 include("./types/system.jl")
 

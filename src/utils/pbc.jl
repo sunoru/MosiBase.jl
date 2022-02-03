@@ -30,3 +30,8 @@ function original_vectors(vecs::AbstractVector{T}, periods::AbstractVector{T}, b
         for i = 1:N
     ]
 end
+
+function pbc_box(N::Integer, ρ::Real, is3d = true)
+    L = (N / ρ) ^ (1 / (is3d ? 3 : 2))
+    is3d ? Vector3(L, L, L) : Vector2(L, L)
+end
