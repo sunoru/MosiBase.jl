@@ -199,9 +199,9 @@ function get_configuration_func(
         rs = reinterpret(T, view(buffer_rs, i_start + 1 + a:i_start + b))
         if hasps
             ps = reinterpret(T, view(buffer_ps, i_start + 1 + a:i_start + b))
-            ConfigurationSystem(rs, ps, box)
+            ConfigurationSystem((rs, ps), box = box, update_periods = false)
         else
-            ConfigurationSystem(rs, box = box)
+            ConfigurationSystem(rs, box = box, update_periods = false)
         end
     end
 end

@@ -68,16 +68,26 @@ struct ConfigurationSystem{
     box::T
 end
 
-function ConfigurationSystem(rs; box = nothing)
+function ConfigurationSystem(rs; box = nothing, update_periods = true)
     T = eltype(rs)
     ps, box = if box ≡ nothing || box ≡ zero(T)
         T[], zero(T)
     else
         zeros(T, length(rs)), box
     end
-    update_periods!(ConfigurationSystem(rs, ps, box))
+    conf = ConfigurationSystem(rs, ps, box)
+    if update_periods
+        update_periods!(conf)
+    end
+    conf
 end
-ConfigurationSystem((rs, ps)::Tuple; box) = update_periods!(ConfigurationSystem(rs, ps, box))
+function ConfigurationSystem((rs, ps)::Tuple; box, update_periods = true) 
+    conf = ConfigurationSystem(rs, ps, box)
+    if update_periods
+        update_periods!(conf)
+    end
+    conf
+end
 ConfigurationSystem(s::MosiSystem; box = pbc_box(s)) = ConfigurationSystem(positions(s), periods(s), box)
 copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), pbc_box(s))
 
