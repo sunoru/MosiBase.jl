@@ -159,7 +159,8 @@ configuration(tape::MultiFileMemoryMapTape, i) = ConfigurationSystem(
 function get_configuration_func(
     tape::MultiFileMemoryMapTape;
     atom_range = 1:natoms(tape),
-    buffer_size = 256
+    buffer_size = 256,
+    return_copy = false
 )
     model = tape.model
     T = vectype(model)
@@ -197,8 +198,14 @@ function get_configuration_func(
         j = (i - 1) % buffer_size
         i_start = j * rsize
         rs = reinterpret(T, view(buffer_rs, i_start + 1 + a:i_start + b))
+        if return_copy
+            rs = copy(rs)
+        end
         if hasps
             ps = reinterpret(T, view(buffer_ps, i_start + 1 + a:i_start + b))
+            if return_copy
+                ps = copy(ps)
+            end
             ConfigurationSystem((rs, ps), box = box, update_periods = false)
         else
             ConfigurationSystem(rs, box = box, update_periods = false)
