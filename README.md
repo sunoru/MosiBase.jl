@@ -1,4 +1,4 @@
-# MosiBases.jl
+# MosiBase.jl
 
 Some basic and utility functions for molecular simulation.
 
