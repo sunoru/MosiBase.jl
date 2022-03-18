@@ -17,7 +17,7 @@ export read_vector_all,
     read_vectors, read_vectors_all
 include("./utils/io.jl")
 
-export Xoshiro256StarStar,
+export MosiRNG,
     make_seed, new_rng, restore_rng, rng_state
 include("./utils/rng.jl")
 
