@@ -1,13 +1,7 @@
-import RandomNumbers: gen_seed
-import RandomNumbers.Xorshifts: Xoshiro256StarStar
+using Random: make_seed, Xoshiro
 
-make_seed(seed::Nullable{Integer} = nothing) = seed === nothing ? gen_seed(UInt64) : (seed % UInt64)
-new_rng(seed::UInt64) = Xoshiro256StarStar(seed)
+new_rng(seed) = Xoshiro(seed)
 
-function restore_rng(state::NTuple{4, UInt64})
-    rng = Xoshiro256StarStar(state)
-    rng.x, rng.y, rng.z, rng.w = state
-    rng
-end
+restore_rng(state::NTuple{4, UInt64}) = Xoshiro(state...)
 
-rng_state(rng::Xoshiro256StarStar) = [rng.x, rng.y, rng.z, rng.w]
+rng_state(rng::Xoshiro) = (rng.s0, rng.s1, rng.s2, rng.s3)

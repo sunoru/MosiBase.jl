@@ -18,3 +18,7 @@ unflatten(x::ReinterpretArray{Float64, 1, T, Vector{T}}) where T <: MosiVector =
 
 to_matrix(v::Vector2s) = reshape(flatten(v), 2, length(v))
 to_matrix(v::Vector3s) = reshape(flatten(v), 3, length(v))
+
+ndims(::Type{Vector2}) = 2
+ndims(::Type{Vector3}) = 3
+ndims(::T) where T <: MosiVector = ndims(T)

@@ -12,13 +12,13 @@ spherical_to_cartesian(spherical::Vector3) = spherical_to_cartesian(spherical[1]
 function cartesian_to_spherical(x, y, z)
     ρ = √(x ^ 2 + y ^ 2 + z ^ 2)
     θ = acos(z / ρ)
-    ϕ = atan(y, x) + π
+    ϕ = atan(y, x)
     Vector3(ρ, θ, ϕ)
 end
 cartesian_to_spherical(xyz::Vector3) = cartesian_to_spherical(xyz[1], xyz[2], xyz[3])
 
 function random_3d_direction(rng::AbstractRNG)
-    ϕ = 2 * π * rand(rng)
+    ϕ = (2 * rand(rng) - 1) * π
     θ = acos(1 - 2 * rand(rng))
     spherical_to_cartesian(1.0, θ, ϕ)
 end
