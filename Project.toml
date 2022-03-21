@@ -1,4 +1,4 @@
-name = "MosiBase"
+name = "MosimoBase"
 uuid = "a39d5f18-f8b1-4777-8f97-f1f91469dbd0"
 authors = ["Sunoru <s@sunoru.com>"]
 version = "0.1.0"
@@ -10,4 +10,5 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
+StaticArrays = "1.2"
 julia = "1.7"

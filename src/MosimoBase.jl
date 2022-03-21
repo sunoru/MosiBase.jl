@@ -1,4 +1,4 @@
-module MosiBase
+module MosimoBase
 
 using LinearAlgebra
 import Base: @pure

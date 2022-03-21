@@ -1,6 +1,6 @@
 using Test
 
 # TODO: Add tests.
-@testset "MosiBase.jl" begin
-    using MosiBase
+@testset "MosimoBase.jl" begin
+    using MosimoBase
 end
