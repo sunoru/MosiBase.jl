@@ -8,3 +8,5 @@
 build/
 
 /test/**/test_out_*
+
+Manifest.toml

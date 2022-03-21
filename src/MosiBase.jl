@@ -27,11 +27,13 @@ export period_check, update_periods!,
 include("./utils/pbc.jl")
 
 export polar_to_cartesian, cartesian_to_polar,
-    random_2d_direction
+    random_2d_direction,
+    random_point_on_circle, random_point_on_disk
 include("./utils/2d_math.jl")
 
 export spherical_to_cartesian, cartesian_to_spherical,
-    random_3d_direction, random_direction_plane
+    random_3d_direction, random_direction_plane,
+    rotate_around
 include("./utils/3d_math.jl")
 
 export orthogonalize, projection_matrix

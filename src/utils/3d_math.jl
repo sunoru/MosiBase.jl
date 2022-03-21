@@ -17,8 +17,16 @@ function cartesian_to_spherical(x, y, z)
 end
 cartesian_to_spherical(xyz::Vector3) = cartesian_to_spherical(xyz[1], xyz[2], xyz[3])
 
+function rotate_around(v::Vector3, k::Vector3, ϕ::Real)
+    k = normalize(k)
+    v_parallel = (v ⋅ k) * k
+    v_perpendicular = v - v_parallel
+    ω = k × v_perpendicular
+    v_parallel + v_perpendicular * cos(ϕ) + ω * sin(ϕ)
+end
+
 function random_3d_direction(rng::AbstractRNG = GLOBAL_RNG)
-    ϕ = (2 * rand(rng) - 1) * π
+    ϕ = 2π * rand(rng) - π
     θ = acos(1 - 2 * rand(rng))
     spherical_to_cartesian(1.0, θ, ϕ)
 end
@@ -27,7 +35,7 @@ function random_direction_plane(rng::AbstractRNG, normal_vector::Vector3)
     a, b, c = normal_vector
     u = normalize(Vector3(b - c, -a + c, a - b))
     v = normalize(normal_vector × u)
-    ϕ = 2 * π * rand(rng)
+    ϕ = 2π * rand(rng) - π
     w = cos(ϕ) * u + sin(ϕ) * v
 end
 
