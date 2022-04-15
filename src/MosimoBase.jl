@@ -1,7 +1,7 @@
 module MosimoBase
 
-using LinearAlgebra
-import Base: @pure
+using Reexport: @reexport
+@reexport using LinearAlgebra, Statistics, StaticArrays
 
 export Nullable
 include("./bases/bases.jl")

@@ -1,6 +1,7 @@
-import Base: ReinterpretArray
+using Base: ReinterpretArray
 
-import StaticArrays: SVector
+import StaticArrays
+using StaticArrays: SVector
 
 const Vector2 = SVector{2, Float64}
 const Vector3 = SVector{3, Float64}
