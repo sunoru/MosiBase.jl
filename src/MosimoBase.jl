@@ -1,7 +1,9 @@
 module MosimoBase
 
 using Reexport: @reexport
-@reexport using LinearAlgebra, Statistics, StaticArrays
+@reexport using LinearAlgebra, Statistics, StaticArrays, Random
+using MacroTools
+using Random: AbstractRNG, GLOBAL_RNG
 
 export Nullable
 include("./bases/bases.jl")
@@ -32,7 +34,11 @@ export polar_to_cartesian, cartesian_to_polar,
 include("./utils/2d_math.jl")
 
 export spherical_to_cartesian, cartesian_to_spherical,
-    random_3d_direction, random_direction_plane,
+    ρ_hat, θ_hat, φ_hat,
+    ∂Ω_∂ρ, ∂Ω_∂θ, ∂Ω_∂φ
+include("./utils/spherical_coordinates.jl")
+
+export random_3d_direction, random_direction_on_plane,
     rotate_around
 include("./utils/3d_math.jl")
 
