@@ -1,7 +1,7 @@
 module MosimoBase
 
 using Reexport: @reexport
-@reexport using LinearAlgebra, Statistics, StaticArrays, Random
+@reexport using LinearAlgebra, Statistics, StaticArrays, Random, DataFrames
 using MacroTools
 using Random: AbstractRNG, GLOBAL_RNG
 

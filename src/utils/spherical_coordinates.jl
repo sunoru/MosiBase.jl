@@ -18,7 +18,7 @@ cartesian_to_spherical(xyz::Vector3) = cartesian_to_spherical(xyz[1], xyz[2], xy
 ρ_hat(Ω::Vector3) = normalize(Ω)
 θ_hat(θ, φ) = Vector3(cos(θ) * cos(φ), cos(θ) * sin(φ), -sin(θ))
 φ_hat(θ, φ) = Vector3(-sin(φ), cos(φ), 0)
-∂Ω_∂ρ(θ, φ) = 0.0
+∂Ω_∂ρ(θ, φ) = zero(Vector3)
 ∂Ω_∂θ(θ, φ) = Vector3(cos(θ) * cos(φ), cos(θ) * sin(φ), -sin(θ))
 ∂Ω_∂φ(θ, φ) = Vector3(-sin(θ) * sin(φ), sin(θ) * cos(φ), 0)
 
