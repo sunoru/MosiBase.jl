@@ -1,7 +1,12 @@
-function rotate_around(v::Vector3, k::Vector3, φ::Real)
-    k = normalize(k)
+function decompose_vector(v::Vector3, k::Vector3)
     v_parallel = (v ⋅ k) * k
     v_perpendicular = v - v_parallel
+    v_parallel, v_perpendicular
+end
+
+function rotate_around(v::Vector3, k::Vector3, φ::Real)
+    k = normalize(k)
+    v_parallel, v_perpendicular = decompose_vector(v, k)
     ω = k × v_perpendicular
     v_parallel + v_perpendicular * cos(φ) + ω * sin(φ)
 end

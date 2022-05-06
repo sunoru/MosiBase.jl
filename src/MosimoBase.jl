@@ -39,7 +39,7 @@ export spherical_to_cartesian, cartesian_to_spherical,
 include("./utils/spherical_coordinates.jl")
 
 export random_3d_direction, random_direction_on_plane,
-    rotate_around
+    rotate_around, decompose_vector
 include("./utils/3d_math.jl")
 
 export orthogonalize, projection_matrix
