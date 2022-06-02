@@ -59,5 +59,3 @@ struct SimulationError <: Exception
 end
 
 Base.showerror(io::IO, e::SimulationError) = print(io, e.msg)
-
-

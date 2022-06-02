@@ -1,7 +1,7 @@
 module MosimoBase
 
 using Reexport: @reexport
-@reexport using LinearAlgebra, Statistics, StaticArrays, Random, DataFrames
+@reexport using LinearAlgebra, Statistics, StaticArrays, Random, DataFrames, JLD
 using MacroTools
 using Random: AbstractRNG, GLOBAL_RNG
 
@@ -12,7 +12,7 @@ export Vector2, Vector3, MosiVector,
     Vector2s, Vector3s,
     AbstractVector2s, AbstractVector3s,
     flatten, unflatten,
-    to_matrix
+    to_matrix, msm_ndims
 include("./bases/vectors.jl")
 
 export read_vector_all,
