@@ -14,7 +14,7 @@ end
 @_with_default_rng function random_3d_direction()
     θ = 2π * rand(rng)
     z = 2 * rand(rng) - 1
-    r = √(1 - z ^ 2)
+    r = √(1 - z^2)
     Vector3(r * cos(θ), r * sin(θ), z)
 end
 
@@ -24,9 +24,10 @@ end
 
 Generate a random direction on a plane defined by a normal vector or two vectors on the plane.
 """
-random_direction_on_plane(rng::AbstractRNG, u::Vector3, v::Vector3) = let φ = 2π * rand(rng)
-    w = cos(φ) * u + sin(φ) * v
-end
+random_direction_on_plane(rng::AbstractRNG, u::Vector3, v::Vector3) =
+    let φ = 2π * rand(rng)
+        w = cos(φ) * u + sin(φ) * v
+    end
 @_with_default_rng function random_direction_on_plane(normal_vector::Vector3)
     a, b, c = normal_vector
     u = normalize(Vector3(b - c, -a + c, a - b))

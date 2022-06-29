@@ -47,7 +47,8 @@ include("./utils/projection_matrix.jl")
 
 export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
     natoms, positions, velocities, periods, has_pbc, original_positions,
-    distance_function, update_periods!
+    distance_function, update_periods!,
+    center_of_mass
 include("./types/system.jl")
 
 export MosiModel, UnknownModel,
