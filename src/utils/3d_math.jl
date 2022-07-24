@@ -1,5 +1,6 @@
+project_onto(a::Vector3, b::Vector3) = (a ⋅ b) * b
 function decompose_vector(v::Vector3, k::Vector3)
-    v_parallel = (v ⋅ k) * k
+    v_parallel = project_onto(v, k)
     v_perpendicular = v - v_parallel
     v_parallel, v_perpendicular
 end
