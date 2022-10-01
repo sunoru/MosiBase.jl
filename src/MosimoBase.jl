@@ -5,7 +5,7 @@ using Reexport: @reexport
 using MacroTools
 using Random: AbstractRNG, GLOBAL_RNG
 
-export Nullable
+export Nullable, ∞
 include("./bases/bases.jl")
 
 export Vector2, Vector3, MosiVector,
