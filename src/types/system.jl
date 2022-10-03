@@ -86,7 +86,7 @@ function ConfigurationSystem((rs, ps)::Tuple; box, update_periods = true)
     end
     conf
 end
-ConfigurationSystem(s::MosiSystem; box = pbc_box(s)) = ConfigurationSystem(positions(s), periods(s), box)
+ConfigurationSystem(s::MosiSystem; box = pbc_box(s), _...) = ConfigurationSystem(positions(s), periods(s), box)
 copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), pbc_box(s))
 
 positions(s::ConfigurationSystem) = s.positions
