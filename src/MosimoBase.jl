@@ -5,6 +5,9 @@ using Reexport: @reexport
 using MacroTools
 using Random: AbstractRNG, GLOBAL_RNG
 
+using LinearAlgebra: norm_sqr
+export norm_sqr
+
 export Nullable, ∞
 include("./bases/bases.jl")
 
