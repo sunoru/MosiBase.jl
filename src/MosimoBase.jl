@@ -14,8 +14,8 @@ include("./bases/bases.jl")
 export Vector2, Vector3, MosiVector,
     Vector2s, Vector3s,
     AbstractVector2s, AbstractVector3s,
-    flatten, unflatten,
-    to_matrix, msm_ndims
+    is_3d, flatten, unflatten,
+    to_matrix
 include("./bases/vectors.jl")
 
 export read_vector_all,
@@ -55,7 +55,7 @@ export MosiSystem, Molecule, MolecularSystem, ConfigurationSystem,
 include("./types/system.jl")
 
 export MosiModel, UnknownModel,
-    name, is_3d, vectype, constraints, constraint_gradients,
+    name, vectype, constraints, constraint_gradients,
     potential_energy_function, force_function, potential_energy_gradients
 include("./types/model.jl")
 

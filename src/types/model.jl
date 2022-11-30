@@ -3,7 +3,7 @@ abstract type MosiModel{T <: MosiVector} end
 name(::T) where T <: MosiModel = string(T)
 vectype(::Type{<:MosiModel{T}}) where T = T
 vectype(::MosiModel{T}) where T = T
-is_3d(model::Union{MosiModel, Type{<:MosiModel}}) = vectype(model) ≡ Vector3
+is_3d(model::Union{MosiModel, Type{<:MosiModel}}) = is_3d(vectype(model))
 natoms(model::MosiModel) = model.N
 constraints(::MosiModel, rs) = Float64[]
 constraint_gradients(::MosiModel{T}, rs) where T = Vector{T}[]
