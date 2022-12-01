@@ -3,7 +3,7 @@ module MosimoBase
 using Reexport: @reexport
 @reexport using LinearAlgebra, Statistics, StaticArrays, Random, DataFrames, JLD
 using MacroTools
-using Random: AbstractRNG, GLOBAL_RNG
+@reexport using Random: AbstractRNG, GLOBAL_RNG
 
 using LinearAlgebra: norm_sqr
 export norm_sqr
@@ -31,6 +31,9 @@ export period_check, update_periods!,
     original_vector, original_vectors
 include("./utils/pbc.jl")
 
+export simple_pack, fcc_pack
+include("./utils/packing.jl")
+
 export polar_to_cartesian, cartesian_to_polar,
     random_2d_direction,
     random_point_on_circle, random_point_on_disk
@@ -56,10 +59,11 @@ include("./types/system.jl")
 
 export MosiModel, UnknownModel,
     name, vectype, constraints, constraint_gradients,
-    potential_energy_function, force_function, potential_energy_gradients
+    potential_energy_function, force_function, potential_energy_gradients,
+    generate_initial
 include("./types/model.jl")
 
-export potential_energy
+export potential_energy, kinetic_energy, mechanical_energy
 include("./types/energy.jl")
 
 export SimulationState, SimulationTape, SimulationSetup, SimulationResult, SimulationError,

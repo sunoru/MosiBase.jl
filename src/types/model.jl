@@ -23,5 +23,7 @@ else
     default_distance
 end
 
+generate_initial(::MosiModel, ST::Type{<:MosiSystem}=MolecularSystem; rng::AbstractRNG=GLOBAL_RNG) = error("Unimplemented")
+
 struct UnknownModel <: MosiModel{MosiVector} end
 name(::UnknownModel) = "UnknownModel"

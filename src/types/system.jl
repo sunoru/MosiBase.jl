@@ -39,16 +39,18 @@ struct MolecularSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T
     box::T
 end
 
-function MolecularSystem(rs, vs, box = nothing)
+function MolecularSystem(rs, vs, box = nothing; update_periods = true)
     N = length(rs)
     @assert N === length(vs)
     T = eltype(rs)
-    periods = if isnothing(box)
+    periods = if isnothing(box) || box ≡ zero(T)
         box = zero(T)
         T[]
     else
         periods = zeros(T, N)
-        update_periods!(rs, periods, box)
+        if update_periods
+            update_periods!(rs, periods, box)
+        end
         periods
     end
     ms = MolecularSystem(rs, vs, periods, box)
