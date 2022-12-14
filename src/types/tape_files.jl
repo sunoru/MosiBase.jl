@@ -105,12 +105,9 @@ natoms(tape::MultiFileMemoryMapTape) = natoms(tape.model)
 vectype(tape::MultiFileMemoryMapTape) = vectype(tape.model)
 Base.time(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.ts, Float64, 1, i)[1]
 times(tape::MultiFileMemoryMapTape) = read_vector_all(tape.tape_files.ts, Float64)
-positions(tape::MultiFileMemoryMapTape, i) =
-    fetch_data!(tape.tape_files.rs, vectype(tape), natoms(tape), i)
-positions(tape::MultiFileMemoryMapTape) =
-    read_vectors_all(tape.tape_files.rs, vectype(tape), natoms(tape))
-velocities(tape::MultiFileMemoryMapTape, i) =
-    fetch_data!(tape.tape_files.vs, vectype(tape), natoms(tape), i)
+positions(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.rs, vectype(tape), natoms(tape), i)
+positions(tape::MultiFileMemoryMapTape) = read_vectors_all(tape.tape_files.rs, vectype(tape), natoms(tape))
+velocities(tape::MultiFileMemoryMapTape, i) = fetch_data!(tape.tape_files.vs, vectype(tape), natoms(tape), i)
 velocities(tape::MultiFileMemoryMapTape) =
     if has_vs(tape)
         read_vectors_all(tape.tape_files.vs, vectype(tape), natoms(tape))

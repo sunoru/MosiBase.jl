@@ -2,8 +2,9 @@ module MosimoBase
 
 using Reexport: @reexport
 @reexport using LinearAlgebra, Statistics, StaticArrays, Random, DataFrames, JLD
-using MacroTools
+using MacroTools: @capture
 @reexport using Random: AbstractRNG, GLOBAL_RNG
+@reexport using MLStyle
 
 using LinearAlgebra: norm_sqr
 export norm_sqr
@@ -60,6 +61,7 @@ include("./types/system.jl")
 export MosiModel, UnknownModel,
     name, vectype, constraints, constraint_gradients,
     potential_energy_function, force_function, potential_energy_gradients,
+    mass,
     generate_initial
 include("./types/model.jl")
 

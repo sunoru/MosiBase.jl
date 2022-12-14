@@ -17,6 +17,7 @@ struct SimpleTape{T, TM <: MosiModel{T}} <: SimulationTape{TM}
 end
 SimulationTape(ts, rs) = SimpleTape(ts, rs, [], [], UnknownModel())
 SimulationTape(ts, rs, vs, ps) = SimpleTape(ts, rs, vs, ps, UnknownModel())
+has_vs(tape::SimulationTape) = length(tape.velocities) > 0
 mosi_model(tape::SimulationTape) = tape.model
 natoms(tape::SimulationTape{UnknownModel}) = length(tape.positions[1])
 natoms(tape::SimulationTape) = natoms(tape.model)
@@ -37,13 +38,23 @@ function get_configuration_func(
 )
     rss = positions(tape)
     pss = periods(tape)
-    model = tape.model
+    model = mosi_model(tape)
     box = pbc_box(model)
     (i::Int) -> ConfigurationSystem(
         view(rss[i], atom_range),
         view(pss[i], atom_range),
         box
     )
+end
+
+function system(tape::SimulationTape, i::Integer)
+    model = mosi_model(tape)
+    has_vs(mosi_model(tape)) || return get_configuration_func(tape)(i)
+    rs = positions(tape, i)
+    vs = velocities(tape, i)
+    ps = periods(tape, i)
+    box = pbc_box(model, i)
+    MolecularSystem(rs, vs, ps, box)
 end
 
 abstract type SimulationSetup end

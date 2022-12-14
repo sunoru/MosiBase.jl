@@ -14,6 +14,7 @@ force_function(::MosiModel, rs) = error("Unimplemented")
 force_function(::MosiModel, rs, i) = error("Unimplemented")
 potential_energy_gradients(model::MosiModel, rs) = -force_function(model, rs)
 potential_energy_gradients(model::MosiModel, rs, i) = -force_function(model, rs, i)
+mass(::MosiModel, i) = 1.0
 
 pbc_box(model::MosiModel) = model.box
 has_pbc(model::MosiModel{T}) where T = pbc_box(model) ≢ zero(T)
