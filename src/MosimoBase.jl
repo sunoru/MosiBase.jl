@@ -65,7 +65,8 @@ export MosiModel, UnknownModel,
     generate_initial
 include("./types/model.jl")
 
-export potential_energy, kinetic_energy, mechanical_energy
+export potential_energy, kinetic_energy, mechanical_energy,
+    degree_of_freedom, temperature
 include("./types/energy.jl")
 
 export SimulationState, SimulationTape, SimulationSetup, SimulationResult, SimulationError,
@@ -74,7 +75,7 @@ export SimulationState, SimulationTape, SimulationSetup, SimulationResult, Simul
 include("./types/simulation.jl")
 
 export TapeFiles, MultiFileMemoryMapTape,
-    has_vs, update_tape, configuration
+    has_vs, update!, read_tape, configuration
 include("./types/tape_files.jl")
 
 export Ensemble, CanonicalEnsemble, MicrocanonicalEnsemble, PotentialEnergyLandscapeEnsemble

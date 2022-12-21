@@ -2,3 +2,10 @@ potential_energy(s::MosiSystem, model::MosiModel) = potential_energy_function(mo
 kinetic_energy(s::MosiSystem, model::MosiModel) = error("Unimplemented")
 kinetic_energy(::ConfigurationSystem, ::MosiModel) = 0.0
 mechanical_energy(s::MosiSystem, model::MosiModel) = potential_energy(s, model) + kinetic_energy(s, model)
+
+degree_of_freedom(s::MosiSystem, model::MosiModel) = 0
+_temperature(K::Float64, dof::Int) = K * 2 / dof
+function temperature(s::MosiSystem, model::MosiModel)
+    dof = degree_of_freedom(s, model)
+    T = _temperature(kinetic_energy(s, model), dof)
+end

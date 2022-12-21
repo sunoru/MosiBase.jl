@@ -51,7 +51,7 @@ function read_tape(tf::TapeFiles, ::Type{T}, N::Integer) where {T <: MosiVector}
     SimulationTape(times, rs, vs, periods)
 end
 
-function update_tape(tf::TapeFiles, s::SimulationState)
+function update!(tf::TapeFiles, s::SimulationState)
     write(tf.ts, time(s))
     write(tf.rs, positions(s))
     if has_vs(tf)

@@ -1,6 +1,5 @@
 using Base: ReinterpretArray
 
-import StaticArrays
 using StaticArrays: SVector
 
 const Vector2 = SVector{2, Float64}
