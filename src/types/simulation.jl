@@ -49,11 +49,11 @@ end
 
 function system(tape::SimulationTape, i::Integer)
     model = mosi_model(tape)
-    has_vs(mosi_model(tape)) || return get_configuration_func(tape)(i)
+    has_vs(tape) || return get_configuration_func(tape)(i)
     rs = positions(tape, i)
     vs = velocities(tape, i)
     ps = periods(tape, i)
-    box = pbc_box(model, i)
+    box = pbc_box(model)
     MolecularSystem(rs, vs, ps, box)
 end
 
