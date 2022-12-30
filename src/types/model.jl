@@ -10,9 +10,12 @@ constraint_gradients(::MosiModel{T}, rs) where T = Vector{T}[]
 constraint_gradients(::MosiModel{T}, rs, i) where T = T[]
 
 potential_energy_function(::MosiModel, rs) = error("Unimplemented")
-force_function(::MosiModel, rs) = error("Unimplemented")
+force_function(::MosiModel, rs; inplace=similar(rs)) = (error("Unimplemented"); inplace)
 force_function(::MosiModel, rs, i) = error("Unimplemented")
-potential_energy_gradients(model::MosiModel, rs) = -force_function(model, rs)
+function potential_energy_gradients(model::MosiModel, rs; inplace=similar(rs))
+    force_function(model, rs; inplace)
+    inplace .= -inplace
+end
 potential_energy_gradients(model::MosiModel, rs, i) = -force_function(model, rs, i)
 mass(::MosiModel, i) = 1.0
 

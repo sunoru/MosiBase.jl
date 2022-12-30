@@ -16,7 +16,8 @@ export Vector2, Vector3, MosiVector,
     Vector2s, Vector3s,
     AbstractVector2s, AbstractVector3s,
     is_3d, flatten, unflatten,
-    to_matrix
+    to_matrix,
+    zero_similar
 include("./bases/vectors.jl")
 
 export read_vector_all,

@@ -21,3 +21,5 @@ unflatten(x::ReinterpretArray{Float64, 1, T, Vector{T}}) where T <: MosiVector =
 
 to_matrix(v::Vector2s) = reshape(flatten(v), 2, length(v))
 to_matrix(v::Vector3s) = reshape(flatten(v), 3, length(v))
+
+zero_similar(a::AbstractArray) = fill!(similar(a), zero(eltype(a)))
