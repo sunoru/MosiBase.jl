@@ -76,7 +76,7 @@ export SimulationState, SimulationTape, SimulationSetup, SimulationResult, Simul
 include("./types/simulation.jl")
 
 export TapeFiles, MultiFileMemoryMapTape,
-    has_vs, update!, read_tape, configuration
+    has_vs, update!, read_tape, configuration, read_buffered
 include("./types/tape_files.jl")
 
 export Ensemble, CanonicalEnsemble, MicrocanonicalEnsemble, PotentialEnergyLandscapeEnsemble

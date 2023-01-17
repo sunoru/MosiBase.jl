@@ -130,14 +130,16 @@ periods(tape::MultiFileMemoryMapTape) =
 configuration(tape::MultiFileMemoryMapTape, i) =
     ConfigurationSystem(positions(tape, i), periods(tape, i), pbc_box(tape.model))
 
-function get_configuration_func(
-    tape::MultiFileMemoryMapTape;
+function read_buffered(
+    tape::MultiFileMemoryMapTape,
+    system_type::Type{<:Union{ConfigurationSystem, MolecularSystem}} = MolecularSystem;
     atom_range = 1:natoms(tape),
     buffer_size = 256,
-    return_copy = false,
+    return_copy = false
 )
     model = tape.model
     T = vectype(model)
+    hasvs = has_vs(tape) && system_type <: MolecularSystem
     hasps = has_ps(tape)
     box = pbc_box(model)
     N = natoms(tape)
@@ -148,22 +150,32 @@ function get_configuration_func(
     a, b = (a - 1) * s1, b * s1
     buffer_len = buffer_size * rsize
     buffer_rs = zeros(UInt8, buffer_len)
+    buffer_vs = hasvs ? zeros(UInt8, buffer_len) : nothing
     buffer_ps = hasps ? zeros(UInt8, buffer_len) : nothing
-    range = 1:buffer_size
+    current_range = Ref(1:buffer_size)
     f_rs = tape.tape_files.rs
+    f_vs = tape.tape_files.vs
     f_ps = tape.tape_files.ps
     seekstart(f_rs)
     readbytes!(f_rs, buffer_rs; all = false)
+    if hasvs
+        seekstart(f_vs)
+        readbytes!(f_vs, buffer_vs; all = false)
+    end
     if hasps
         seekstart(f_ps)
         readbytes!(f_ps, buffer_ps; all = false)
     end
-    (i::Int) -> begin
-        if i ∉ range
+    function (i::Int)
+        if i ∉ current_range[]
             t = (i - 1) ÷ buffer_size
-            range = t*buffer_size+1:(t+1)*buffer_size
+            current_range[] = t*buffer_size+1:(t+1)*buffer_size
             seek(f_rs, rsize * t * buffer_size)
             readbytes!(f_rs, buffer_rs; all = false)
+            if hasvs
+                seek(f_vs, rsize * t * buffer_size)
+                readbytes!(f_vs, buffer_vs; all = false)
+            end
             if hasps
                 seek(f_ps, rsize * t * buffer_size)
                 readbytes!(f_ps, buffer_ps; all = false)
@@ -175,14 +187,31 @@ function get_configuration_func(
         if return_copy
             rs = copy(rs)
         end
-        if hasps
+        ps = if hasps
             ps = reinterpret(T, view(buffer_ps, i_start+1+a:i_start+b))
-            if return_copy
-                ps = copy(ps)
-            end
-            ConfigurationSystem((rs, ps), box = box, update_periods = false)
+            return_copy ? copy(ps) : ps
         else
-            ConfigurationSystem(rs, box = box, update_periods = false)
+            (isnothing(box) || box ≡ zero(T)) ? T[] : zero_similar(rs)
         end
+        system_type <: ConfigurationSystem && return ConfigurationSystem(rs, ps, box)
+        vs = if hasvs
+            vs = reinterpret(T, view(buffer_vs, i_start+1+a:i_start+b))
+            return_copy ? copy(vs) : vs
+        else
+            zero_similar(rs)
+        end
+        MolecularSystem(rs, vs, ps, box)
     end
 end
+function read_buffered(cb::Function, tape::MultiFileMemoryMapTape; kwargs...)
+    f = read_buffered(tape; kwargs...)
+    cb(f)
+    nothing
+end
+
+get_configuration_func(
+    tape::MultiFileMemoryMapTape;
+    atom_range = 1:natoms(tape),
+    buffer_size = 256,
+    return_copy = false,
+) = read_buffered(tape, ConfigurationSystem; atom_range, buffer_size, return_copy)

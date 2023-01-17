@@ -27,7 +27,18 @@ else
     default_distance
 end
 
-generate_initial(::MosiModel, ST::Type{<:MosiSystem}=MolecularSystem; rng::AbstractRNG=GLOBAL_RNG) = error("Unimplemented")
+generate_initial(::MosiModel, ST::Type{<:MosiSystem}; rng::AbstractRNG=GLOBAL_RNG) = error("Unimplemented")
+# a default implementation for MolecularSystem
+function generate_initial(model::MosiModel, ::Type{MolecularSystem}=MolecularSystem; rng::AbstractRNG=GLOBAL_RNG)
+    conf = generate_initial(model, ConfigurationSystem; rng)
+    box = pbc_box(model)
+    rs = positions(conf)
+    vs = randn(rng, Vector3, length(rs))
+    # Remove center-of-mass momentum
+    vs_cm = mean(vs)
+    vs = Vector3[v - vs_cm for v in vs]
+    MolecularSystem(rs, vs, box)
+end
 
 struct UnknownModel <: MosiModel{MosiVector} end
 name(::UnknownModel) = "UnknownModel"

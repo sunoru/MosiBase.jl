@@ -18,12 +18,6 @@ original_positions(s::MosiSystem) =
     else
         positions(s)
     end
-distance_function(s::MosiSystem) =
-    if has_pbc(s)
-        pbc_distance(pbc_box(s))
-    else
-        default_distance
-    end
 update_periods!(s::MosiSystem) =
     if has_pbc(s)
         update_periods!(positions(s), periods(s), pbc_box(s))
@@ -32,10 +26,15 @@ update_periods!(s::MosiSystem) =
         s
     end
 
-struct MolecularSystem{T <: MosiVector, AT <: AbstractVector{T}} <: MosiSystem{T}
-    positions::AT
-    velocities::AT
-    periods::AT
+struct MolecularSystem{
+    T <: MosiVector,
+    AT1 <: AbstractVector{T},
+    AT2 <: AbstractVector{T},
+    AT3 <: AbstractVector{T},
+} <: MosiSystem{T}
+    positions::AT1
+    velocities::AT2
+    periods::AT3
     box::T
 end
 
@@ -88,7 +87,8 @@ function ConfigurationSystem((rs, ps)::Tuple; box, update_periods = true)
     end
     conf
 end
-ConfigurationSystem(s::MosiSystem; box = pbc_box(s), _...) = ConfigurationSystem(positions(s), periods(s), box)
+ConfigurationSystem(s::MosiSystem; box = pbc_box(s), _...) =
+    ConfigurationSystem(positions(s), periods(s), box)
 copy(s::ConfigurationSystem) = ConfigurationSystem(copy(positions(s)), copy(periods(s)), pbc_box(s))
 
 positions(s::ConfigurationSystem) = s.positions
