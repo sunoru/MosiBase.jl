@@ -7,6 +7,9 @@ function read_vector_all(io::IOStream, ::Type{T}) where T
     seek(io, t)
     vec
 end
+read_vector_all(filename::AbstractString, T::Type) = open(filename) do fi
+    read_vector_all(fi, T)
+end
 
 read_vectors(io::IOStream, ::Type{T}, N::Integer) where T <: MosiVector =
     read!(io, Vector{T}(undef, N))
@@ -16,4 +19,7 @@ function read_vectors_all(io::IOStream, ::Type{T}, N::Integer) where T <: MosiVe
     len = position(io) ÷ (sizeof(T) * N)
     seekstart(io)
     [read_vectors(io, T, N) for _ in 1:len]
+end
+read_vectors_all(filename::AbstractString, ::Type{T}, N::Integer) = open(filename) do fi
+    read_vectors_all(fi, T, N)
 end
