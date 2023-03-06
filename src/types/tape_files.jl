@@ -99,6 +99,7 @@ function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where 
     vec
 end
 
+Base.close(tape::MultiFileMemoryMapTape) = close(tape.tape_files)
 has_vs(tape::MultiFileMemoryMapTape) = has_vs(tape.tape_files)
 has_ps(tape::MultiFileMemoryMapTape) = has_ps(tape.tape_files)
 Base.length(tape::MultiFileMemoryMapTape) = tape.len
