@@ -20,6 +20,6 @@ function read_vectors_all(io::IOStream, ::Type{T}, N::Integer) where T <: MosiVe
     seekstart(io)
     [read_vectors(io, T, N) for _ in 1:len]
 end
-read_vectors_all(filename::AbstractString, ::Type{T}, N::Integer) = open(filename) do fi
+read_vectors_all(filename::AbstractString, T::Type, N::Integer) = open(filename) do fi
     read_vectors_all(fi, T, N)
 end
