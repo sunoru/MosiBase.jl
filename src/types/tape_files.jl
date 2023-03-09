@@ -87,6 +87,9 @@ function MultiFileMemoryMapTape(
 )
     tape_files = TapeFiles(datadir; filename_prefix = filename_prefix, has_vs = has_vs, has_ps = has_ps)
     len = filesize(joinpath(datadir, "$filename_prefix-ts.dat")) ÷ sizeof(Float64)
+    if len == 0
+        len = filesize(joinpath(datadir, "$filename_prefix-rs.dat")) ÷ natoms(model) ÷ sizeof(vectype(model))
+    end
     MultiFileMemoryMapTape(tape_files, len, model)
 end
 
@@ -100,6 +103,7 @@ function fetch_data!(file::IOStream, ::Type{T}, len::Integer, i::Integer) where 
 end
 
 Base.close(tape::MultiFileMemoryMapTape) = close(tape.tape_files)
+Base.flush(tape::MultiFileMemoryMapTape) = flush(tape.tape_files)
 has_vs(tape::MultiFileMemoryMapTape) = has_vs(tape.tape_files)
 has_ps(tape::MultiFileMemoryMapTape) = has_ps(tape.tape_files)
 Base.length(tape::MultiFileMemoryMapTape) = tape.len
