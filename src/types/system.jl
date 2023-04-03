@@ -59,6 +59,7 @@ positions(s::MolecularSystem) = s.positions
 velocities(s::MolecularSystem) = s.velocities
 periods(s::MolecularSystem) = s.periods
 pbc_box(s::MolecularSystem) = s.box
+copy(s::MolecularSystem) = MolecularSystem(copy(positions(s)), copy(velocities(s)), copy(periods(s)), pbc_box(s))
 
 struct ConfigurationSystem{T <: MosiVector, AT1 <: AbstractVector{T}, AT2 <: AbstractVector{T}} <:
        MosiSystem{T}
