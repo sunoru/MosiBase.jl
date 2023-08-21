@@ -63,8 +63,8 @@ function update!(nl::NeighborList, rs::AbstractVector, dist::F) where {F}
 end
 
 Base.length(nl::NeighborList) = nl.end_indices[end]
-Base.eltype(::NeighborList) = Tuple{Int, Int}
-function Base.iterate(nl::NeighborList, state::Tuple{Int, Int} = (1, 0))
+Base.eltype(::NeighborList) = Pair{Int, Int}
+function Base.iterate(nl::NeighborList, state::Pair{Int, Int} = (1, 0))
     (i, ii) = state
     N = nl.N
     ii += 1

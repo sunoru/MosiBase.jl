@@ -61,7 +61,7 @@ include("./types/system.jl")
 
 export MosiModel, UnknownModel,
     name, vectype, constraints, constraint_gradients,
-    atom_pairs, potential_energy_pair, force_pair,
+    interaction_pairs, potential_energy_pair, force_pair,
     potential_energy_function, force_function, potential_energy_gradients,
     mass,
     generate_initial

@@ -9,7 +9,7 @@ constraints(::MosiModel, rs) = Float64[]
 constraint_gradients(::MosiModel{T}, rs) where {T} = Vector{T}[]
 constraint_gradients(::MosiModel{T}, rs, i) where {T} = T[]
 
-atom_pairs(model::MosiModel) =
+interaction_pairs(model::MosiModel) =
     let N = natoms(model)
         ((i, j) for i in 1:N-1 for j in i+1:N)
     end
@@ -17,9 +17,9 @@ atom_pairs(model::MosiModel) =
 potential_energy_pair(::MosiModel, rs, i, j) = error("Unimplemented")
 force_pair(::MosiModel, rs, i, j) = error("Unimplemented")
 
-potential_energy_function(model::MosiModel, rs; neighbor_list = atom_pairs(model)) =
+potential_energy_function(model::MosiModel, rs; neighbor_list = interaction_pairs(model)) =
     sum(potential_energy_pair(model, rs, i, j) for (i, j) in neighbor_list)
-function force_function(::MosiModel, rs; inplace = similar(rs), neighbor_list = atom_pairs(model))
+function force_function(::MosiModel, rs; inplace = similar(rs), neighbor_list = interaction_pairs(model))
     for (i, j) in neighbor_list
         fij = force_pair(model, rs, i, j)
         inplace[i] += fij
