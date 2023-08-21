@@ -19,13 +19,14 @@ force_pair(::MosiModel, rs, i, j) = error("Unimplemented")
 
 potential_energy_function(model::MosiModel, rs; neighbor_list = interaction_pairs(model)) =
     sum(potential_energy_pair(model, rs, i, j) for (i, j) in neighbor_list)
-function force_function(::MosiModel, rs; inplace = similar(rs), neighbor_list = interaction_pairs(model))
+function force_function(model::MosiModel, rs; inplace = similar(rs), neighbor_list = interaction_pairs(model))
+    forces = fill!(inplace, zero(eltype(rs)))
     for (i, j) in neighbor_list
         fij = force_pair(model, rs, i, j)
-        inplace[i] += fij
-        inplace[j] -= fij
+        forces[i] += fij
+        forces[j] -= fij
     end
-    inplace
+    forces
 end
 force_function(::MosiModel, rs, i) = error("Unimplemented")
 function potential_energy_gradients(model::MosiModel, rs; inplace = similar(rs))

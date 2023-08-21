@@ -64,14 +64,14 @@ end
 
 Base.length(nl::NeighborList) = nl.end_indices[end]
 Base.eltype(::NeighborList) = Pair{Int, Int}
-function Base.iterate(nl::NeighborList, state::Pair{Int, Int} = (1, 0))
+function Base.iterate(nl::NeighborList, state::Tuple{Int, Int} = (1, 0))
     (i, ii) = state
     N = nl.N
     ii += 1
     # only need to loop until N - 1
     while i < N
         end_index = @inbounds nl.end_indices[i]
-        ii ≤ end_index && return ((i, @inbounds nl.neighbors[ii]), (i, ii))
+        ii ≤ end_index && return (i => (@inbounds nl.neighbors[ii]), (i, ii))
         i += 1
     end
     nothing
