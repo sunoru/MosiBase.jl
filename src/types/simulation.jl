@@ -2,9 +2,11 @@ abstract type SimulationState end
 
 system(::SimulationState) = error("Unimplemented")
 Base.time(::SimulationState) = error("Unimplemented")
+natoms(state::SimulationState) = natoms(system(state))
 positions(state::SimulationState) = positions(system(state))
 velocities(state::SimulationState) = velocities(system(state))
 periods(state::SimulationState) = periods(system(state))
+distance_function(state::SimulationState) = distance_function(system(state))
 
 abstract type SimulationTape{TM <: MosiModel} end
 

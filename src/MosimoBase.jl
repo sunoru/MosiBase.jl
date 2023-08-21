@@ -61,6 +61,7 @@ include("./types/system.jl")
 
 export MosiModel, UnknownModel,
     name, vectype, constraints, constraint_gradients,
+    atom_pairs, potential_energy_pair, force_pair,
     potential_energy_function, force_function, potential_energy_gradients,
     mass,
     generate_initial
@@ -78,6 +79,9 @@ include("./types/simulation.jl")
 export TapeFiles, MultiFileMemoryMapTape,
     has_vs, update!, read_tape, configuration, read_buffered
 include("./types/tape_files.jl")
+
+export NeighborList
+include("./types/neighbor_list.jl")
 
 export Ensemble, CanonicalEnsemble, MicrocanonicalEnsemble, PotentialEnergyLandscapeEnsemble
 include("./types/ensembles.jl")
