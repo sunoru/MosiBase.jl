@@ -5,9 +5,9 @@ vectype(::Type{<:MosiModel{T}}) where {T} = T
 vectype(::MosiModel{T}) where {T} = T
 is_3d(model::Union{MosiModel, Type{<:MosiModel}}) = is_3d(vectype(model))
 natoms(model::MosiModel) = model.N
-constraints(::MosiModel, rs) = Float64[]
-constraint_gradients(::MosiModel{T}, rs) where {T} = Vector{T}[]
-constraint_gradients(::MosiModel{T}, rs, i) where {T} = T[]
+constraints(::MosiModel, rs; inplace = Float64[]) = inplace
+constraint_gradients(::MosiModel{T}, rs; inplace = T[], norm = false) where {T} = inplace
+constraint_gradients(::MosiModel{T}, rs, i; inplace = T[], norm = false) where {T} = inplace
 
 interaction_pairs(model::MosiModel) =
     let N = natoms(model)
@@ -20,7 +20,9 @@ force_pair(::MosiModel, rs, i, j) = error("Unimplemented")
 potential_energy_function(model::MosiModel, rs; neighbor_list = interaction_pairs(model)) =
     sum(potential_energy_pair(model, rs, i, j) for (i, j) in neighbor_list)
 function force_function(model::MosiModel, rs; inplace = similar(rs), neighbor_list = interaction_pairs(model))
-    forces = fill!(inplace, zero(eltype(rs)))
+    # Sometimes `fill!` doesn't returns the argument
+    fill!(inplace, zero(eltype(rs)))
+    forces = inplace
     for (i, j) in neighbor_list
         fij = force_pair(model, rs, i, j)
         forces[i] += fij
@@ -29,9 +31,10 @@ function force_function(model::MosiModel, rs; inplace = similar(rs), neighbor_li
     forces
 end
 force_function(::MosiModel, rs, i) = error("Unimplemented")
-function potential_energy_gradients(model::MosiModel, rs; inplace = similar(rs))
+function potential_energy_gradients(model::MosiModel, rs; inplace = similar(rs), norm = false)
     force_function(model, rs; inplace)
     inplace .= -inplace
+    norm ? normalize!(inplace) : inplace
 end
 potential_energy_gradients(model::MosiModel, rs, i) = -force_function(model, rs, i)
 mass(::MosiModel, i) = 1.0
